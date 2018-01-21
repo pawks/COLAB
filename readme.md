@@ -1,0 +1,1 @@
+This directory contains the assignment files of the Computer Organisation lab & theory course in the Jan-May,2018 sem. The assignment questions can be found in the parent directory and the answers(labelled) in the respective directories. 
