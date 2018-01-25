@@ -5,7 +5,7 @@
   .equ file_read,0x6a                     ;replace file_read with 0x69
   .equ file_close,0x68                    ;replace file_close with 0x68
   .equ exit,0x11                          ;replace exit with 0x11
-;  .global _start
+  .global _start
 ;-------------------------------------------------------------------------------
 Open:
   ldr r0,=filename                        ;store the filename into r0
