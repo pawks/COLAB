@@ -16,32 +16,35 @@ Open:
   str r0,[r1]                             ;store the file handle
   mov pc,lr
 Read:
+  ldr r0,=filehandle
+  ldr r0,[r0]
   ldr r1,=text                            ;r1=address of the destination
   mov r2,#512
   swi file_read                           ;read from the file
-  bcs Eofreached
+  cmp r0,#0
+  beq Close
+  bl Print
   b Read
 Close:
   ldr r0,=filehandle
   ldr r0,[r0]
   swi file_close                          ;close file
-  mov pc,lr
+  b EXIT
 _start:
   bl Open
   bl Read
-  bl Close
-  b EXIT
 EXIT:
   swi exit                                ;HALT
 ERR:
   ldr r0,=ferr_msg                        ;error message into r0
   swi pr_stdout                           ;print onto stdout
-  swi pr_stdout                           ;print onto stdout
   b EXIT
-Eofreached:
+Print:
   mov r0,#1
   ldr r1,=text                            ;the contents of the file into r1
   swi pr_stdout                           ;print onto stdout
+  mov r0,#'\n'
+  swi 0x00
   mov pc,lr
 ;-------------------------------------------------------------------------------
 filehandle: .skip 4
