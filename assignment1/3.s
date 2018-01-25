@@ -1,10 +1,11 @@
 ;-------------------------------------------------------------------------------
   .equ pr_stdout,0x69                     ;replace pr_stdout with 0x00
   .equ file_open,0x66                     ;replace file_open with 0x66
-  .equ file_write,0x6b                    ;replace file_write with 0x69
-  .equ file_read,0x6c                     ;replace file_read with 0x69
+  .equ file_write,0x69                    ;replace file_write with 0x69
+  .equ file_read,0x6a                     ;replace file_read with 0x69
   .equ file_close,0x68                    ;replace file_close with 0x68
   .equ exit,0x11                          ;replace exit with 0x11
+  .equ pr_ch,0x00
   .global _start
 ;-------------------------------------------------------------------------------
 Open:
@@ -18,8 +19,11 @@ Open:
 Read:
   ldr r0,=filehandle
   ldr r0,[r0]
+  ldr r1,=text
+  mov r2,#512
   swi file_read
-  bcs Close
+  cmp r0,#0
+  beq Close
   bl Print
   b Read
 Close:
@@ -37,16 +41,23 @@ ERR:
   swi pr_stdout                           ;print onto stdout
   b Exit
 Print:
-  mov r1,r0
-  ldr r0,=filehandle
-  ldr r0,[r0]
-  swi file_write
+  ldrb r0,[r1],#1
+  cmp r0,#',
+  beq Skip
+  swi pr_ch
+  cmp r0,#0
+  bne Print
   mov pc,lr
-  
+Skip:
+  mov r0,#'\n
+  swi pr_ch
+  bal Print
+
+
 
 ;-------------------------------------------------------------------------------
 filehandle: .skip 4
-filename: .asciz "file.txt"
+filename: .asciz "input.txt"
 ferr_msg: .asciz "Error openning file\n"
 rerr_msg: .asciz "Error reading file\n"
 text: .skip 512
