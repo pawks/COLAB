@@ -14,6 +14,7 @@ Open:
   bcs ERR
   ldr r1,=filehandle                      ;use r1 to initialise filehandle
   str r0,[r1]                             ;store the file handle
+  mov pc,lr
 Read:
   ldr r1,=text                            ;r1=address of the destination
   mov r2,#512
@@ -24,6 +25,7 @@ Close:
   ldr r0,=filehandle
   ldr r0,[r0]
   swi file_close                          ;close file
+  mov pc,lr
 _start:
   bl Open
   bl Read
@@ -34,11 +36,13 @@ EXIT:
 ERR:
   ldr r0,=ferr_msg                        ;error message into r0
   swi pr_stdout                           ;print onto stdout
+  swi pr_stdout                           ;print onto stdout
   b EXIT
 Eofreached:
   mov r0,#1
   ldr r1,=text                            ;the contents of the file into r1
   swi pr_stdout                           ;print onto stdout
+  mov pc,lr
 ;-------------------------------------------------------------------------------
 filehandle: .skip 4
 filename: .asciz "file.txt"
